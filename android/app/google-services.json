@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "922475661723",
+    "project_id": "employee-management-app-15dd7",
+    "storage_bucket": "employee-management-app-15dd7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:922475661723:android:909e2731d13eaad020f93e",
+        "android_client_info": {
+          "package_name": "com.virajbhor.employeemanagementapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnv_XCAdERGqGZl-j8N8bOEasbiFtaR2k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
