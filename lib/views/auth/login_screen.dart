@@ -193,7 +193,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            _showForgotPasswordDialog();
+                          },
                           child: const Text('Forgot Password?'),
                         ),
                       ),
@@ -290,4 +292,51 @@ class _LoginScreenState extends State<LoginScreen> {
       debugPrint('Login failed: ${e.message}');
     }
   }
+
+  Future<void> _showForgotPasswordDialog() async {
+  final resetEmailController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Reset Password'),
+        content: TextField(
+          controller: resetEmailController,
+          decoration: const InputDecoration(
+            hintText: 'Enter your email',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                await FirebaseAuth.instance.sendPasswordResetEmail(
+                  email: resetEmailController.text.trim(),
+                );
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Password reset email sent')),
+                  );
+                }
+              } on FirebaseAuthException catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(e.message ?? 'Failed to send reset email')),
+                  );
+                }
+              }
+            },
+            child: const Text('Send'),
+          ),
+        ],
+      );
+    },
+  );
+}
 }
