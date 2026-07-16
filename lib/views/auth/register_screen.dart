@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -11,7 +12,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool _obscurePassword = true;
   final _formKey = GlobalKey<FormState>();
 
@@ -282,9 +284,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            debugPrint(
-                              'Form valid — Email: ${_emailController.text}',
-                            );
+                            _registerUser();
                           }
                         },
                         child: const Text('Register'),
@@ -295,7 +295,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         children: [
                           const Text("Already have an account? "),
                           TextButton(
-                            style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                            ),
                             onPressed: () {
                               Navigator.pop(context);
                             },
@@ -312,5 +314,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _registerUser() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    try {
+      final userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
+
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Registration successful')));
+      debugPrint('User created: ${userCredential.user?.uid}');
+      Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? 'Registration failed')),
+      );
+      debugPrint('Registration failed: ${e.message}');
+    }
   }
 }
