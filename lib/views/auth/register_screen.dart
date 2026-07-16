@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -326,6 +327,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
             email: _emailController.text.trim(),
             password: _passwordController.text.trim(),
           );
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set({
+            'fullName': _fullNameController.text.trim(),
+            'email': _emailController.text.trim(),
+            'leaveBalance': 12,
+            'todayAttendance': 'Not Checked In',
+            'checkInTime': null,
+          });
 
       if (!mounted) {
         return;
